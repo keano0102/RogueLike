@@ -36,7 +36,6 @@ public class MapManager : MonoBehaviour
     public Dictionary<Vector2Int, Node> Nodes = new Dictionary<Vector2Int, Node>();
     public List<Vector3Int> VisibleTiles;
     public Dictionary<Vector3Int, TileData> Tiles;
-    
 
     [Header("Map Settings")]
     public int width = 80;
@@ -44,6 +43,7 @@ public class MapManager : MonoBehaviour
     public int roomMaxSize = 10;
     public int roomMinSize = 6;
     public int maxRooms = 30;
+    public int maxEnemies = 2; // Nieuwe variabele toegevoegd
 
     private void Start()
     {
@@ -59,20 +59,13 @@ public class MapManager : MonoBehaviour
         generator.SetSize(width, height);
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
+        generator.SetMaxEnemies(maxEnemies); // maxEnemies instellen
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
-
-    public GameObject CreateActor(string name, Vector2 position)
-    {
-        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
-        actor.name = name;
-        return actor;
-    }
-
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
     public bool IsWalkable(Vector3 position)
@@ -134,7 +127,7 @@ public class MapManager : MonoBehaviour
             }
 
             Tiles[pos].IsVisible = false;
-            FogMap.SetColor(pos, new Color(1.0f, 1.0f, 1.0f, 0.5f));
+            FogMap.SetColor(pos, new Color(1.0f, 1.0f, 1.0f, 1.0f));
         }
 
         VisibleTiles.Clear();

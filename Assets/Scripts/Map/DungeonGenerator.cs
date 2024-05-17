@@ -7,6 +7,7 @@ public class DungeonGenerator : MonoBehaviour
     private int width, height;
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
+    private int maxEnemies; // Nieuwe variabele toegevoegd
     List<Room> rooms = new List<Room>();
 
     public void SetSize(int width, int height)
@@ -24,6 +25,11 @@ public class DungeonGenerator : MonoBehaviour
     public void SetMaxRooms(int max)
     {
         maxRooms = max;
+    }
+
+    public void SetMaxEnemies(int max) // Nieuwe functie toegevoegd
+    {
+        maxEnemies = max;
     }
 
     public void Generate()
@@ -69,15 +75,41 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
 
-            // create a coridor between rooms
+            // create a corridor between rooms
             if (rooms.Count != 0)
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
 
+            // Plaats vijanden in de kamer
+            PlaceEnemies(room, maxEnemies);
+
             rooms.Add(room);
         }
-        var player = MapManager.Get.CreateActor("Player", rooms[0].Center());
+        var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
+    }
+
+    private void PlaceEnemies(Room room, int maxEnemies) // Nieuwe functie toegevoegd
+    {
+        // the number of enemies we want
+        int num = Random.Range(0, maxEnemies + 1);
+
+        for (int counter = 0; counter < num; counter++)
+        {
+            // The borders of the room are walls, so add and subtract by 1
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1);
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // create different enemies
+            if (Random.value < 0.5f)
+            {
+                GameManager.Get.CreateActor("tileset_139", new Vector2(x, y));
+            }
+            else
+            {
+                GameManager.Get.CreateActor("tileset_149", new Vector2(x, y));
+            }
+        }
     }
 
     private bool TrySetWallTile(Vector3Int pos)
