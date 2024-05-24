@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class HealthBarController : MonoBehaviour
+public class HealthBar : MonoBehaviour
 {
     private VisualElement root;
     private VisualElement healthBar;
-    private Label healthLabel;
+    private Label healthText;
 
     // Start is called before the first frame update
     void Start()
@@ -14,18 +14,33 @@ public class HealthBarController : MonoBehaviour
         var uiDocument = GetComponent<UIDocument>();
         root = uiDocument.rootVisualElement;
 
-        // Assuming you have defined the health bar and label in the UXML
+        // Fetch the health bar and text elements
         healthBar = root.Q<VisualElement>("HealthBar");
-        healthLabel = root.Q<Label>("HealthLabel");
+        healthText = root.Q<Label>("HealthText");
+
+        // Check if elements are found
+        if (healthBar == null)
+        {
+            Debug.LogError("HealthBar element is not found in the UXML!");
+        }
+        if (healthText == null)
+        {
+            Debug.LogError("HealthText element is not found in the UXML!");
+        }
 
         // Initialize the health bar and label with default values
-        healthBar.style.width = new Length(100, LengthUnit.Percent); // Set to 100% width
-        healthLabel.text = "100/100 HP";
+        SetValues(30, 30); // Example initialization
     }
 
     // Method to set the health values and update the UI
     public void SetValues(int currentHitPoints, int maxHitPoints)
     {
+        if (healthBar == null || healthText == null)
+        {
+            Debug.LogError("HealthBar or HealthText element is not initialized!");
+            return;
+        }
+
         // Calculate the percentage of hit points remaining
         float percent = (float)currentHitPoints / maxHitPoints * 100;
 
@@ -33,6 +48,6 @@ public class HealthBarController : MonoBehaviour
         healthBar.style.width = new Length(percent, LengthUnit.Percent);
 
         // Update the text of the health label
-        healthLabel.text = $"{currentHitPoints}/{maxHitPoints} HP";
+        healthText.text = $"{currentHitPoints}/{maxHitPoints} HP";
     }
 }

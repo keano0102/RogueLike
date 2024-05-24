@@ -30,27 +30,44 @@ public class Enemy : MonoBehaviour
 
     public void RunAI()
     {
-        // If target is null, set target to player (from GameManager)
-        if (Target == null)
+        // Als target null is of vernietigd is, stel target in op de speler (vanuit GameManager)
+        if (Target == null || Target.Equals(null))
         {
             Target = GameManager.Get.Player;
         }
 
-        // Convert the position of the target to a grid position
+        // Als de target nog steeds null is na de poging om deze toe te wijzen, keer dan terug
+        if (Target == null)
+        {
+            return;
+        }
+
+        // Converteer de positie van de target naar een gridpositie
         Vector3Int targetGridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
 
-        // First check if already fighting, because the FieldOfView check costs more CPU
+        // Controleer eerst of er al gevochten wordt, omdat het controleren van het gezichtsveld meer CPU kost
         Vector3Int currentGridPosition = MapManager.Get.FloorMap.WorldToCell(transform.position);
         if (IsFighting || GetComponent<Actor>().FieldOfView.Contains(targetGridPosition))
         {
-            // If the enemy was not fighting, it should be fighting now
+            // Als de vijand niet aan het vechten was, zou hij nu moeten vechten
             if (!IsFighting)
             {
                 IsFighting = true;
             }
 
-            // Call MoveAlongPath with the grid position
-            MoveAlongPath((Vector2Int)targetGridPosition);
+            // Bereken de afstand tot de target
+            float distanceToTarget = Vector3.Distance(transform.position, Target.transform.position);
+
+            // Als de afstand minder is dan 1.5, val dan de target aan
+            if (distanceToTarget < 1.5f)
+            {
+                Action.Hit(GetComponent<Actor>(), Target);
+            }
+            else
+            {
+                // Anders, beweeg langs het pad naar de target
+                MoveAlongPath((Vector2Int)targetGridPosition);
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     public List<Actor> Enemies { get; private set; } = new List<Actor>();
 
     // Voeg een Player variabele toe
-    public Actor Player { get; private set; }
+    public Actor Player;
 
     // Voeg de functie toe met de gevraagde declaratie
     public void AddEnemy(Actor enemy)
@@ -77,6 +77,21 @@ public class GameManager : MonoBehaviour
             {
                 enemyComponent.RunAI();
             }
+        }
+    }
+
+    // Functie om een vijand uit de lijst te verwijderen
+    public void RemoveEnemy(Actor enemy)
+    {
+        if (Enemies.Contains(enemy))
+        {
+            Enemies.Remove(enemy);
+            Destroy(enemy.gameObject);
+            Debug.Log($"{enemy.name} has been removed.");
+        }
+        else
+        {
+            Debug.Log("Enemy not found in the list.");
         }
     }
 }

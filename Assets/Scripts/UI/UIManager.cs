@@ -6,10 +6,10 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
     [Header("Documents")]
-    public GameObject HealthBar;
+    public GameObject HealthBar; // Ensure this is assigned in the inspector
     public GameObject Messages;
 
-    private HealthBarController healthBarController;
+    private HealthBar healthBar;
     private Messages messagesController;
 
     private void Awake()
@@ -31,19 +31,39 @@ public class UIManager : MonoBehaviour
         // Get the script components from the GameObjects
         if (HealthBar != null)
         {
-            healthBarController = HealthBar.GetComponent<HealthBarController>();
+            healthBar = HealthBar.GetComponent<HealthBar>();
+            if (healthBar == null)
+            {
+                Debug.LogError("HealthBar component is not found on the assigned HealthBarObject!");
+            }
         }
+        else
+        {
+            Debug.LogError("HealthBar is not assigned in the UIManager!");
+        }
+
         if (Messages != null)
         {
             messagesController = Messages.GetComponent<Messages>();
+        }
+
+        // Initial clear and welcome message
+        if (messagesController != null)
+        {
+            messagesController.Clear();
+            messagesController.AddMessage("Welcome to the dungeon, Adventurer!", Color.yellow);
         }
     }
 
     public void UpdateHealth(int current, int max)
     {
-        if (healthBarController != null)
+        if (healthBar != null)
         {
-            healthBarController.SetValues(current, max);
+            healthBar.SetValues(current, max);
+        }
+        else
+        {
+            Debug.LogError("HealthBar component is not assigned!");
         }
     }
 

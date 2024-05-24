@@ -22,7 +22,7 @@ public class Messages : MonoBehaviour
         Clear();
 
         // Add a welcome message
-        AddMessage("Welcome to the dungeon, Adventurer!", Color.green);
+        AddMessage("Welcome to the dungeon, Adventurer!", Color.blue);
     }
 
     public void Clear()
