@@ -20,11 +20,14 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Get { get => instance; }
 
-    // Voeg een publieke lijst van het type Actor toe
+    // Publieke lijst van het type Actor
     public List<Actor> Enemies { get; private set; } = new List<Actor>();
 
-    // Voeg een Player variabele toe
+    // Player variabele
     public Actor Player;
+
+    // Publieke lijst van het type Consumable
+    public List<Consumable> Items { get; private set; } = new List<Consumable>();
 
     // Voeg de functie toe met de gevraagde declaratie
     public void AddEnemy(Actor enemy)
@@ -93,5 +96,39 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Enemy not found in the list.");
         }
+    }
+
+    // Functie om een item toe te voegen aan de lijst van items
+    public void AddItem(Consumable item)
+    {
+        Items.Add(item);
+    }
+
+    // Functie om een item uit de lijst van items te verwijderen
+    public void RemoveItem(Consumable item)
+    {
+        if (Items.Contains(item))
+        {
+            Items.Remove(item);
+            Destroy(item.gameObject);
+            Debug.Log($"{item.name} has been removed.");
+        }
+        else
+        {
+            Debug.Log("Item not found in the list.");
+        }
+    }
+
+    // Functie om een item te krijgen op een bepaalde locatie
+    public Consumable GetItemAtLocation(Vector3 location)
+    {
+        foreach (Consumable item in Items)
+        {
+            if (item.transform.position == location)
+            {
+                return item;
+            }
+        }
+        return null;
     }
 }

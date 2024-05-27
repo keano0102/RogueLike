@@ -44,6 +44,7 @@ public class MapManager : MonoBehaviour
     public int roomMinSize = 6;
     public int maxRooms = 30;
     public int maxEnemies = 2; // Nieuwe variabele toegevoegd
+    public int maxItems = 2; // Nieuwe variabele toegevoegd
 
     private void Start()
     {
@@ -60,12 +61,14 @@ public class MapManager : MonoBehaviour
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
         generator.SetMaxEnemies(maxEnemies); // maxEnemies instellen
+        generator.SetMaxItems(maxItems); // maxItems instellen
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
+
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
     public bool IsWalkable(Vector3 position)

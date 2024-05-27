@@ -7,7 +7,9 @@ public class DungeonGenerator : MonoBehaviour
     private int width, height;
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
-    private int maxEnemies; // Nieuwe variabele toegevoegd
+    private int maxEnemies;
+    private int maxItems; // Nieuwe variabele toegevoegd
+
     List<Room> rooms = new List<Room>();
 
     public void SetSize(int width, int height)
@@ -27,9 +29,14 @@ public class DungeonGenerator : MonoBehaviour
         maxRooms = max;
     }
 
-    public void SetMaxEnemies(int max) // Nieuwe functie toegevoegd
+    public void SetMaxEnemies(int max)
     {
         maxEnemies = max;
+    }
+
+    public void SetMaxItems(int max) // Nieuwe functie toegevoegd
+    {
+        maxItems = max;
     }
 
     public void Generate()
@@ -84,12 +91,15 @@ public class DungeonGenerator : MonoBehaviour
             // Plaats vijanden in de kamer
             PlaceEnemies(room, maxEnemies);
 
+            // Plaats items in de kamer
+            PlaceItems(room, maxItems);
+
             rooms.Add(room);
         }
         var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
     }
 
-    private void PlaceEnemies(Room room, int maxEnemies) // Nieuwe functie toegevoegd
+    private void PlaceEnemies(Room room, int maxEnemies)
     {
         // the number of enemies we want
         int num = Random.Range(0, maxEnemies + 1);
@@ -109,6 +119,37 @@ public class DungeonGenerator : MonoBehaviour
             {
                 GameManager.Get.CreateActor("tileset_149", new Vector2(x, y));
             }
+        }
+    }
+
+    private void PlaceItems(Room room, int maxItems) // Nieuwe functie toegevoegd
+    {
+        // the number of items we want
+        int num = Random.Range(0, maxItems + 1);
+
+        for (int counter = 0; counter < num; counter++)
+        {
+            // The borders of the room are walls, so add and subtract by 1
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1);
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // create different items
+            string itemType;
+            float randomValue = Random.value;
+            if (randomValue < 0.33f)
+            {
+                itemType = "HealthPotion";
+            }
+            else if (randomValue < 0.66f)
+            {
+                itemType = "Fireball";
+            }
+            else
+            {
+                itemType = "ScrollOfConfusion";
+            }
+
+            GameManager.Get.CreateActor(itemType, new Vector2(x, y));
         }
     }
 
