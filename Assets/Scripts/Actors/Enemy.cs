@@ -16,10 +16,6 @@ public class Enemy : MonoBehaviour
         Algorithm = GetComponent<AStar>();
     }
 
-    void Update()
-    {
-        RunAI();
-    }
 
     public void MoveAlongPath(Vector2Int targetPosition)
     {

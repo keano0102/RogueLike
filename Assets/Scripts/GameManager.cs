@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,22 +19,15 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Get { get => instance; }
 
-    // Publieke lijst van het type Actor
     public List<Actor> Enemies { get; private set; } = new List<Actor>();
-
-    // Player variabele
     public Actor Player;
-
-    // Publieke lijst van het type Consumable
     public List<Consumable> Items { get; private set; } = new List<Consumable>();
 
-    // Voeg de functie toe met de gevraagde declaratie
     public void AddEnemy(Actor enemy)
     {
         Enemies.Add(enemy);
     }
 
-    // Methode om de Player in te stellen
     public void SetPlayer(Actor player)
     {
         Player = player;
@@ -48,16 +40,13 @@ public class GameManager : MonoBehaviour
         return actor;
     }
 
-    // Werk de functie GetActorAtLocation uit
     public Actor GetActorAtLocation(Vector3 location)
     {
-        // Controleer of de locatie gelijk is aan de positie van de Player
         if (Player != null && Player.transform.position == location)
         {
             return Player;
         }
 
-        // Controleer of de locatie gelijk is aan de positie van een Enemy
         foreach (Actor enemy in Enemies)
         {
             if (enemy.transform.position == location)
@@ -66,11 +55,24 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Als er geen Actor gevonden is, geef null terug
         return null;
     }
 
-    // Voeg de functie StartEnemyTurn toe
+    public List<Actor> GetNearbyEnemies(Vector3 location)
+    {
+        List<Actor> nearbyEnemies = new List<Actor>();
+
+        foreach (Actor enemy in Enemies)
+        {
+            if (Vector3.Distance(enemy.transform.position, location) < 5)
+            {
+                nearbyEnemies.Add(enemy);
+            }
+        }
+
+        return nearbyEnemies;
+    }
+
     public void StartEnemyTurn()
     {
         foreach (Actor enemy in Enemies)
@@ -83,7 +85,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Functie om een vijand uit de lijst te verwijderen
     public void RemoveEnemy(Actor enemy)
     {
         if (Enemies.Contains(enemy))
@@ -98,13 +99,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Functie om een item toe te voegen aan de lijst van items
     public void AddItem(Consumable item)
     {
         Items.Add(item);
     }
 
-    // Functie om een item uit de lijst van items te verwijderen
     public void RemoveItem(Consumable item)
     {
         if (Items.Contains(item))
@@ -119,7 +118,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Functie om een item te krijgen op een bepaalde locatie
     public Consumable GetItemAtLocation(Vector3 location)
     {
         foreach (Consumable item in Items)
