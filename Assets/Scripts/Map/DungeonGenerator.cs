@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class DungeonGenerator : MonoBehaviour
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
     private int maxEnemies;
-    private int maxItems; // Nieuwe variabele toegevoegd
+    private int maxItems;
 
     List<Room> rooms = new List<Room>();
 
@@ -34,7 +35,7 @@ public class DungeonGenerator : MonoBehaviour
         maxEnemies = max;
     }
 
-    public void SetMaxItems(int max) // Nieuwe functie toegevoegd
+    public void SetMaxItems(int max)
     {
         maxItems = max;
     }
@@ -88,10 +89,10 @@ public class DungeonGenerator : MonoBehaviour
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
 
-            // Plaats vijanden in de kamer
+            // Place enemies in the room
             PlaceEnemies(room, maxEnemies);
 
-            // Plaats items in de kamer
+            // Place items in the room
             PlaceItems(room, maxItems);
 
             rooms.Add(room);
@@ -122,7 +123,7 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceItems(Room room, int maxItems) // Nieuwe functie toegevoegd
+    private void PlaceItems(Room room, int maxItems)
     {
         // the number of items we want
         int num = Random.Range(0, maxItems + 1);

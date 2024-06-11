@@ -6,48 +6,79 @@ public class HealthBar : MonoBehaviour
     private VisualElement root;
     private VisualElement healthBar;
     private Label healthText;
+    private Label levelText;
+    private Label xpText;
 
-    // Start is called before the first frame update
     void Start()
     {
-        // Fetch the root VisualElement from the UIDocument component
         var uiDocument = GetComponent<UIDocument>();
         root = uiDocument.rootVisualElement;
 
-        // Fetch the health bar and text elements
         healthBar = root.Q<VisualElement>("HealthBar");
         healthText = root.Q<Label>("HealthText");
+        levelText = root.Q<Label>("LevelText");
+        xpText = root.Q<Label>("XPText");
 
-        // Check if elements are found
         if (healthBar == null)
         {
-            Debug.LogError("HealthBar element is not found in the UXML!");
+            Debug.LogError("HealthBar element is niet gevonden in de UXML!");
         }
         if (healthText == null)
         {
-            Debug.LogError("HealthText element is not found in the UXML!");
+            Debug.LogError("HealthText element is niet gevonden in de UXML!");
+        }
+        if (levelText == null)
+        {
+            Debug.LogError("LevelText element is niet gevonden in de UXML!");
+        }
+        if (xpText == null)
+        {
+            Debug.LogError("XPText element is niet gevonden in de UXML!");
         }
 
-        // Initialize the health bar and label with default values
-        SetValues(30, 30); // Example initialization
+        // Initialiseer de health bar en labels met standaardwaarden
+        SetValues(30, 30); // Voorbeeld initialisatie
+        SetLevel(1); // Voorbeeld initialisatie
+        SetXP(0); // Voorbeeld initialisatie
     }
 
-    // Method to set the health values and update the UI
-    public void SetValues(int currentHitPoints, int maxHitPoints)
+    // Methode om de health waarden in te stellen en de UI bij te werken
+    public void SetValues(int huidigeHitPoints, int maxHitPoints)
     {
         if (healthBar == null || healthText == null)
         {
-            Debug.LogError("HealthBar or HealthText element is not initialized!");
+            Debug.LogError("HealthBar of HealthText element is niet geïnitialiseerd!");
             return;
         }
 
-        // Calculate the percentage of hit points remaining
-        float percent = (float)currentHitPoints / maxHitPoints * 100;
+        float percentage = (float)huidigeHitPoints / maxHitPoints * 100;
 
-        // Update the width of the health bar
-        healthBar.style.width = new Length(percent, LengthUnit.Percent);
+        healthBar.style.width = new Length(percentage, LengthUnit.Percent);
 
-        // Update the text of the health label
-        healthText.text = $"{currentHitPoints}/{maxHitPoints} HP";
+        healthText.text = $"{huidigeHitPoints}/{maxHitPoints} HP";
+    }
+
+    // Methode om het level in te stellen en de UI bij te werken
+    public void SetLevel(int level)
+    {
+        if (levelText == null)
+        {
+            Debug.LogError("LevelText element is niet geïnitialiseerd!");
+            return;
+        }
+
+        levelText.text = $"Level: {level}";
+    }
+
+    // Methode om de XP in te stellen en de UI bij te werken
+    public void SetXP(int xp)
+    {
+        if (xpText == null)
+        {
+            Debug.LogError("XPText element is niet geïnitialiseerd!");
+            return;
+        }
+
+        xpText.text = $"XP: {xp}";
     }
 }

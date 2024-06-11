@@ -6,26 +6,24 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
 {
     private Controls controls;
 
-    // Voeg de drie boolean variabelen toe en initialiseer ze op false
     private bool inventoryIsOpen = false;
     private bool droppingItem = false;
     private bool usingItem = false;
 
-    // Voeg een public Inventory toe
     public Inventory inventory;
     public InventoryUI inventoryUI;
 
     private void Awake()
     {
         controls = new Controls();
-        inventory = GetComponent<Inventory>(); // Verondersteld dat het Inventory-component aan hetzelfde GameObject is gekoppeld
+        inventory = GetComponent<Inventory>();
     }
 
     private void Start()
     {
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
         GameManager.Get.Player = GetComponent<Actor>();
-        inventoryUI = UIManager.Instance.InventoryUI; // Verkrijg de InventoryUI van de UIManager
+        inventoryUI = UIManager.Instance.InventoryUI;
     }
 
     private void OnEnable()
@@ -169,5 +167,27 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         // Implement the functionality for using an item
         // For now, we will just log the item's name
         Debug.Log($"Using item: {item.name}");
+    }
+
+    // Voeg de ontbrekende functie toe om naar een nieuw niveau te gaan via een ladder
+    private void CheckLadder()
+    {
+        // Vraag de GameManager naar een ladder op de huidige locatie
+        Ladder ladder = GameManager.Get.GetLadderAtLocation(transform.position);
+
+        if (ladder != null)
+        {
+            // Kijk of de ladder naar boven of naar beneden gaat
+            if (ladder.GoesUp)
+            {
+                // Voer de functie MoveUp van MapManager uit
+                MapManager.Get.MoveUp();
+            }
+            else
+            {
+                // Voer de functie MoveDown van MapManager uit
+                MapManager.Get.MoveDown();
+            }
+        }
     }
 }

@@ -13,22 +13,30 @@ public class Actor : MonoBehaviour
     [SerializeField] private int hitPoints = 30;     // Initial HP is set to 30
     [SerializeField] private int defense;
     [SerializeField] private int power;
+    [SerializeField] private int level = 1;
+    [SerializeField] private int xp = 0;
+    [SerializeField] private int xpToNextLevel = 100;
 
     // Public getters for the private variables
     public int MaxHitPoints => maxHitPoints;
     public int HitPoints => hitPoints;
     public int Defense => defense;
     public int Power => power;
+    public int Level => level;
+    public int XP => xp;
+    public int XPToNextLevel => xpToNextLevel;
 
     private void Start()
     {
         algorithm = new AdamMilVisibility();
         UpdateFieldOfView();
 
-        // If this actor is the player, update the health in the UIManager
+        // If this actor is the player, update the health and level in the UIManager
         if (GetComponent<Player>())
         {
             UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
+            UIManager.Instance.UpdateLevel(level);
+            UIManager.Instance.UpdateXP(xp);
         }
     }
 
@@ -53,7 +61,7 @@ public class Actor : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void DoDamage(int hp)
+    public void DoDamage(int hp, Actor attacker)
     {
         hitPoints -= hp;
         if (hitPoints < 0)
@@ -71,6 +79,11 @@ public class Actor : MonoBehaviour
         if (hitPoints == 0)
         {
             Die();
+            // Check if the attacker is the player
+            if (attacker != null && attacker.GetComponent<Player>())
+            {
+                attacker.AddXP(xp);
+            }
         }
     }
 
@@ -90,6 +103,40 @@ public class Actor : MonoBehaviour
         {
             UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
             UIManager.Instance.AddMessage($"You have been healed by {healedAmount} hit points.", Color.green);
+        }
+    }
+
+    public void AddXP(int xp)
+    {
+        this.xp += xp;
+        while (this.xp >= xpToNextLevel)
+        {
+            this.xp -= xpToNextLevel;
+            LevelUp();
+        }
+
+        // If this actor is the player, update the XP and level in the UIManager
+        if (GetComponent<Player>())
+        {
+            UIManager.Instance.UpdateXP(this.xp);
+            UIManager.Instance.UpdateLevel(level);
+        }
+    }
+
+    private void LevelUp()
+    {
+        level++;
+        xpToNextLevel = Mathf.CeilToInt(xpToNextLevel * 1.5f); // Increase the XP needed for next level exponentially
+        maxHitPoints += 10; // Increase max HP on level up
+        defense += 2; // Increase defense on level up
+        power += 2; // Increase power on level up
+        hitPoints = maxHitPoints; // Heal to max HP on level up
+
+        // If this actor is the player, show a level up message and update the health bar
+        if (GetComponent<Player>())
+        {
+            UIManager.Instance.AddMessage("Congratulations, you leveled up!", Color.yellow);
+            UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
         }
     }
 

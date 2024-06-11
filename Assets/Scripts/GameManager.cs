@@ -5,6 +5,9 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
+    // List to store ladders
+    public List<Ladder> Ladders { get; private set; } = new List<Ladder>();
+
     private void Awake()
     {
         if (instance == null)
@@ -125,6 +128,25 @@ public class GameManager : MonoBehaviour
             if (item.transform.position == location)
             {
                 return item;
+            }
+        }
+        return null;
+    }
+
+    // Function to add a ladder to the list
+    public void AddLadder(Ladder ladder)
+    {
+        Ladders.Add(ladder);
+    }
+
+    // Function to get a ladder at a given location
+    public Ladder GetLadderAtLocation(Vector3 location)
+    {
+        foreach (Ladder ladder in Ladders)
+        {
+            if (ladder.transform.position == location)
+            {
+                return ladder;
             }
         }
         return null;

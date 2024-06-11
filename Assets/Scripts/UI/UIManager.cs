@@ -2,13 +2,12 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    // Singleton instance
     public static UIManager Instance { get; private set; }
 
-    [Header("Documents")]
-    public GameObject HealthBar; // Ensure this is assigned in the inspector
+    [Header("Documenten")]
+    public GameObject HealthBar; // Zorg ervoor dat dit is toegewezen in de inspector
     public GameObject Messages;
-    public GameObject Inventory; // GameObject for the inventory UI
+    public GameObject Inventory; // GameObject voor de inventory UI
 
     private HealthBar healthBar;
     private Messages messagesController;
@@ -16,7 +15,6 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        // Implement singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -30,18 +28,17 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        // Get the script components from the GameObjects
         if (HealthBar != null)
         {
             healthBar = HealthBar.GetComponent<HealthBar>();
             if (healthBar == null)
             {
-                Debug.LogError("HealthBar component is not found on the assigned HealthBarObject!");
+                Debug.LogError("HealthBar component is niet gevonden op het toegewezen HealthBarObject!");
             }
         }
         else
         {
-            Debug.LogError("HealthBar is not assigned in the UIManager!");
+            Debug.LogError("HealthBar is niet toegewezen in de UIManager!");
         }
 
         if (Messages != null)
@@ -54,19 +51,18 @@ public class UIManager : MonoBehaviour
             inventoryUI = Inventory.GetComponent<InventoryUI>();
             if (inventoryUI == null)
             {
-                Debug.LogError("InventoryUI component is not found on the assigned Inventory GameObject!");
+                Debug.LogError("InventoryUI component is niet gevonden op het toegewezen Inventory GameObject!");
             }
         }
         else
         {
-            Debug.LogError("Inventory is not assigned in the UIManager!");
+            Debug.LogError("Inventory is niet toegewezen in de UIManager!");
         }
 
-        // Initial clear and welcome message
         if (messagesController != null)
         {
             messagesController.Clear();
-            messagesController.AddMessage("Welcome to the dungeon, Adventurer!", Color.yellow);
+            messagesController.AddMessage("Welkom in de kerker, Avonturier!", Color.yellow);
         }
     }
 
@@ -78,24 +74,31 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("HealthBar component is not assigned!");
+            Debug.LogError("HealthBar component is niet toegewezen!");
         }
     }
 
-    public void AddMessage(string message, Color color)
+    public void ShowInventory()
     {
-        if (messagesController != null)
+        if (inventoryUI != null)
         {
-            messagesController.AddMessage(message, color);
+            inventoryUI.Show();
+        }
+        else
+        {
+            Debug.LogError("InventoryUI component is niet toegewezen!");
         }
     }
 
-    // Public getter for the InventoryUI component
-    public InventoryUI InventoryUI
+    public void HideInventory()
     {
-        get
+        if (inventoryUI != null)
         {
-            return inventoryUI;
+            inventoryUI.Hide();
+        }
+        else
+        {
+            Debug.LogError("InventoryUI component is niet toegewezen!");
         }
     }
 }

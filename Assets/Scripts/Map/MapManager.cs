@@ -1,24 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class MapManager : MonoBehaviour
 {
     private static MapManager instance;
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-    }
 
     public static MapManager Get { get => instance; }
 
@@ -43,8 +29,21 @@ public class MapManager : MonoBehaviour
     public int roomMaxSize = 10;
     public int roomMinSize = 6;
     public int maxRooms = 30;
-    public int maxEnemies = 2; // Nieuwe variabele toegevoegd
-    public int maxItems = 2; // Nieuwe variabele toegevoegd
+    public int maxEnemies = 2;
+    public int maxItems = 2;
+    public int floor = 0; // Nieuwe variabele toegevoegd
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -53,6 +52,11 @@ public class MapManager : MonoBehaviour
 
     private void GenerateDungeon()
     {
+        // Alle tiles verwijderen
+        FloorMap.ClearAllTiles();
+        ObstacleMap.ClearAllTiles();
+        FogMap.ClearAllTiles();
+
         Tiles = new Dictionary<Vector3Int, TileData>();
         VisibleTiles = new List<Vector3Int>();
 
@@ -60,25 +64,28 @@ public class MapManager : MonoBehaviour
         generator.SetSize(width, height);
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
-        generator.SetMaxEnemies(maxEnemies); // maxEnemies instellen
-        generator.SetMaxItems(maxItems); // maxItems instellen
+        generator.SetMaxEnemies(maxEnemies);
+        generator.SetMaxItems(maxItems);
+        generator.SetCurrentFloor(floor); // Huidige verdieping instellen
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
+
+        UIManager.Instance.FloorInfo.UpdateFloor(floor); // Update de vloer tekst
     }
 
-    public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
-
-    public bool IsWalkable(Vector3 position)
+    public void MoveUp()
     {
-        Vector3Int gridPosition = FloorMap.WorldToCell(position);
-        if (!InBounds(gridPosition.x, gridPosition.y) || ObstacleMap.HasTile(gridPosition))
-        {
-            return false;
-        }
-        return true;
+        floor++;
+        GenerateDungeon();
+    }
+
+    public void MoveDown()
+    {
+        floor--;
+        GenerateDungeon();
     }
 
     private void AddTileMapToDictionary(Tilemap tilemap)
@@ -120,26 +127,15 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public void UpdateFogMap(List<Vector3Int> playerFOV)
+    public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
+
+    public bool IsWalkable(Vector3 position)
     {
-        foreach (var pos in VisibleTiles)
+        Vector3Int gridPosition = FloorMap.WorldToCell(position);
+        if (!InBounds(gridPosition.x, gridPosition.y) || ObstacleMap.HasTile(gridPosition))
         {
-            if (!Tiles[pos].IsExplored)
-            {
-                Tiles[pos].IsExplored = true;
-            }
-
-            Tiles[pos].IsVisible = false;
-            FogMap.SetColor(pos, new Color(1.0f, 1.0f, 1.0f, 1.0f));
+            return false;
         }
-
-        VisibleTiles.Clear();
-
-        foreach (var pos in playerFOV)
-        {
-            Tiles[pos].IsVisible = true;
-            FogMap.SetColor(pos, Color.clear);
-            VisibleTiles.Add(pos);
-        }
+        return true;
     }
 }
